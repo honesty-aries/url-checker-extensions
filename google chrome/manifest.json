@@ -1,0 +1,24 @@
+{
+  "manifest_version": 3,
+  "name": "URL Safety Checker",
+  "version": "1.0",
+  "description": "Automatically checks if the current page is safe using the API Aries - safe url checker api endpoint.",
+  "permissions": [
+    "activeTab",
+    "tabs"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ],
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  }
+}
