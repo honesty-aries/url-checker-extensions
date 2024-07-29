@@ -1,1 +1,1 @@
-access from site: https://greasyfork.org/en/scripts/502108-url-safety-checker-api-aries
+greasyfork: https://greasyfork.org/en/scripts/502108-url-safety-checker-api-aries
