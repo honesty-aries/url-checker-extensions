@@ -1,24 +1,47 @@
 // ==UserScript==
 // @name         URL Safety Checker - API - Aries
 // @namespace    http://tampermonkey.net/
-// @version      1.0
+// @version      1.1
 // @description  Check if a URL is safe using API Aries
+// @icon         https://dashboard.api-aries.online/logo/logo.png
 // @author       API Aries - Team
 // @license      MIT
 // @match        *://*/*
 // @grant        GM_xmlhttpRequest
+// @grant        GM_registerMenuCommand
 // @connect      api.api-aries.online
-// @icon         https://dashboard.api-aries.online/logo/logo.png
 // @require      http://code.jquery.com/jquery-3.6.0.min.js
 // @downloadURL https://update.greasyfork.org/scripts/502108/URL%20Safety%20Checker%20-%20API%20-%20Aries.user.js
 // @updateURL https://update.greasyfork.org/scripts/502108/URL%20Safety%20Checker%20-%20API%20-%20Aries.meta.js
 // ==/UserScript==
 
+/*
+MIT License
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+
 (function() {
     'use strict';
 
     // User's API token - MUST be set by the user
-    const apiToken = '';  // <-- Place your API Aries token here - https://dashboard.api-aries.online
+    const apiToken = ''; // <-- Place your API Aries token here - https://dashboard.api-aries.online
 
     if (!apiToken) {
         alert('API token is required for this script to function. You can obtain a free token by visiting https://dashboard.api-aries.online/. Please edit the script and place your token in the designated area.');
@@ -33,6 +56,11 @@
             <p id="urlSafetyMessage" style="text-align: center; margin-top: 10px;">Checking URL's safety...</p>
             <p style="text-align: center; font-size: 10px; color: #999; margin-top: 10px;">Powered by <a href="https://api-aries.online" target="_blank" style="color: #3498db; text-decoration: none;">API Aries</a></p>
         </div>
+        <div id="apiUsagePopup" style="position: fixed; top: 60px; right: 20px; width: 300px; padding: 15px; background-color: #fff; border: 1px solid #ccc; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); z-index: 10001; display: none; font-family: Arial, sans-serif;">
+            <h3 style="text-align: center;">API Usage</h3>
+            <p id="apiUsageMessage" style="text-align: center; margin-top: 10px;">Fetching usage data...</p>
+            <button id="closeApiUsage" style="display: block; margin: 10px auto; padding: 5px 10px; border: none; background-color: #3498db; color: #fff; border-radius: 5px; cursor: pointer;">Close</button>
+        </div>
         <style>
             @keyframes spin {
                 0% { transform: rotate(0deg); }
@@ -44,6 +72,7 @@
     // Function to check if the URL is safe
     function checkURLSafety(url) {
         $('#urlSafetyPopup').fadeIn();
+        $('#urlSafetySpinner').show();
         GM_xmlhttpRequest({
             method: 'GET',
             url: `https://api.api-aries.online/v1/checkers/safe-url/?url=${encodeURIComponent(url)}`,
@@ -88,6 +117,35 @@
         $('#urlSafetySpinner').hide();
         setTimeout(() => { $('#urlSafetyPopup').fadeOut(); }, 5000); // Hide after 5 seconds
     }
+
+    // Function to fetch and display API usage
+    function fetchApiUsage() {
+        $('#apiUsagePopup').fadeIn();
+        GM_xmlhttpRequest({
+            method: 'GET',
+            url: `https://api.api-aries.online/system-api/dashboard/usage/?api_token=${apiToken}`,
+            onload: function(response) {
+                let usage = JSON.parse(response.responseText);
+                $('#apiUsageMessage').html(`
+                    <strong>Request Count:</strong> ${usage.request_count}<br>
+                    <strong>Last Request Date:</strong> ${usage.last_request_date}<br>
+                    <strong>Requests Left for Today:</strong> ${usage.request_left_for_today.toLocaleString()}
+                    <button><a href="https://dashboard.api-aries.online/">See more by logging into our dashboard.</a></button>
+                `);
+            },
+            onerror: function() {
+                $('#apiUsageMessage').text('Error fetching API usage data.');
+            }
+        });
+    }
+
+    // Register the menu command to show API usage
+    GM_registerMenuCommand('Show API Usage', fetchApiUsage);
+
+    // Close API Usage Popup
+    $(document).on('click', '#closeApiUsage', function() {
+        $('#apiUsagePopup').fadeOut();
+    });
 
     // Run the script on page load
     window.onload = function() {
