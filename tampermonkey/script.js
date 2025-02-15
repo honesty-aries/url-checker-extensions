@@ -3,13 +3,13 @@
 // @namespace    http://tampermonkey.net/
 // @version      1.1
 // @description  Check if a URL is safe using API Aries
-// @icon         https://dashboard.api-aries.online/logo/logo.png
+// @icon         https://panel.api-aries.com/logo/logo.png
 // @author       API Aries - Team
 // @license      MIT
 // @match        *://*/*
 // @grant        GM_xmlhttpRequest
 // @grant        GM_registerMenuCommand
-// @connect      api.api-aries.online
+// @connect      api.api-aries.com
 // @require      http://code.jquery.com/jquery-3.6.0.min.js
 // @downloadURL https://update.greasyfork.org/scripts/502108/URL%20Safety%20Checker%20-%20API%20-%20Aries.user.js
 // @updateURL https://update.greasyfork.org/scripts/502108/URL%20Safety%20Checker%20-%20API%20-%20Aries.meta.js
@@ -41,20 +41,20 @@ SOFTWARE.
     'use strict';
 
     // User's API token - MUST be set by the user
-    const apiToken = ''; // <-- Place your API Aries token here - https://dashboard.api-aries.online
+    const apiToken = ''; // <-- Place your API Aries token here - https://panel.api-aries.com
 
     if (!apiToken) {
-        alert('API token is required for this script to function. You can obtain a free token by visiting https://dashboard.api-aries.online/. Please edit the script and place your token in the designated area.');
+        alert('API token is required for this script to function. You can obtain a free token by visiting https://panel.api-aries.com/. Please edit the script and place your token in the designated area.');
         return;
     }
 
     // Add a popup container to the page
     $('body').append(`
         <div id="urlSafetyPopup" style="position: fixed; top: 20px; right: 20px; width: 300px; padding: 15px; background-color: #fff; border: 1px solid #ccc; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); z-index: 10000; display: none; font-family: Arial, sans-serif;">
-            <img src="https://dashboard.api-aries.online/logo/logo.png" alt="Icon" style="width: 50px; height: 50px; display: block; margin: 0 auto;">
+            <img src="https://panel.api-aries.com/logo/logo.png" alt="Icon" style="width: 50px; height: 50px; display: block; margin: 0 auto;">
             <div id="urlSafetySpinner" style="border: 4px solid rgba(0, 0, 0, 0.1); border-top: 4px solid #3498db; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; margin: 10px auto;"></div>
             <p id="urlSafetyMessage" style="text-align: center; margin-top: 10px;">Checking URL's safety...</p>
-            <p style="text-align: center; font-size: 10px; color: #999; margin-top: 10px;">Powered by <a href="https://api-aries.online" target="_blank" style="color: #3498db; text-decoration: none;">API Aries</a></p>
+            <p style="text-align: center; font-size: 10px; color: #999; margin-top: 10px;">Powered by <a href="https://api-aries.com" target="_blank" style="color: #3498db; text-decoration: none;">API Aries</a></p>
         </div>
         <div id="apiUsagePopup" style="position: fixed; top: 60px; right: 20px; width: 300px; padding: 15px; background-color: #fff; border: 1px solid #ccc; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); z-index: 10001; display: none; font-family: Arial, sans-serif;">
             <h3 style="text-align: center;">API Usage</h3>
@@ -75,7 +75,7 @@ SOFTWARE.
         $('#urlSafetySpinner').show();
         GM_xmlhttpRequest({
             method: 'GET',
-            url: `https://api.api-aries.online/v1/checkers/safe-url/?url=${encodeURIComponent(url)}`,
+            url: `https://api.api-aries.com/v1/checkers/safe-url/?url=${encodeURIComponent(url)}`,
             headers: {
                 'APITOKEN': apiToken
             },
@@ -123,14 +123,14 @@ SOFTWARE.
         $('#apiUsagePopup').fadeIn();
         GM_xmlhttpRequest({
             method: 'GET',
-            url: `https://api.api-aries.online/system-api/dashboard/usage/?api_token=${apiToken}`,
+            url: `https://api.api-aries.com/system-api/dashboard/usage/?api_token=${apiToken}`,
             onload: function(response) {
                 let usage = JSON.parse(response.responseText);
                 $('#apiUsageMessage').html(`
                     <strong>Request Count:</strong> ${usage.request_count}<br>
                     <strong>Last Request Date:</strong> ${usage.last_request_date}<br>
                     <strong>Requests Left for Today:</strong> ${usage.request_left_for_today.toLocaleString()}
-                    <button><a href="https://dashboard.api-aries.online/">See more by logging into our dashboard.</a></button>
+                    <button><a href="https://panel.api-aries.com/">See more by logging into our dashboard.</a></button>
                 `);
             },
             onerror: function() {
